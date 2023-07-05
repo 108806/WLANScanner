@@ -70,6 +70,38 @@ import java.util.TimerTask;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends Activity implements IEventListener {
 
+	public String getLoc() {
+		// Obtain the context from your Android application
+		Context context = getApplicationContext();
+		StringBuilder loc = new StringBuilder();
+		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				// TODO: Consider calling
+				//    Activity#requestPermissions
+				// here to request the missing permissions, and then overriding
+				//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+				//                                          int[] grantResults)
+				// to handle the case where the user grants the permission. See the documentation
+				// for Activity#requestPermissions for more details.
+				return "Wrong permissions for loc.";
+			}
+		}
+		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+		if (location != null) {
+			double latitude = location.getLatitude();
+			double longitude = location.getLongitude();
+			loc.append(latitude).append(longitude);
+			final String locFinal = loc.toString();
+			Log.d("Loc check:", locFinal);
+			return locFinal;
+		} else {
+			Log.e("Loc check", "Location not available.");
+		}
+		return "Undefined loc error.";
+	}
+
 	public final static boolean SHOWROOM_MODE_ENABLED = false;
 
 	public final static int MAX_SCAN_RESULT_AGE = 130; // (in seconds)
@@ -85,7 +117,11 @@ public class MainActivity extends Activity implements IEventListener {
 			Manifest.permission.ACCESS_WIFI_STATE,
 			Manifest.permission.CHANGE_WIFI_STATE,
 			Manifest.permission.WRITE_EXTERNAL_STORAGE,
-			Manifest.permission.READ_EXTERNAL_STORAGE
+			Manifest.permission.READ_EXTERNAL_STORAGE,
+			Manifest.permission.WAKE_LOCK,
+			Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+			Manifest.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND,
+			Manifest.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND,
 	};
 
 	private ActionBar.Tab tab1, tab2, tab3, tab4;
@@ -120,7 +156,6 @@ public class MainActivity extends Activity implements IEventListener {
 
 	private OUI ouiHandler;
 
-	private String getLoc;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -224,38 +259,6 @@ public class MainActivity extends Activity implements IEventListener {
 		requestScan();
 
 		handlePermissions();
-	}
-
-	String getLoc() {
-		// Obtain the context from your Android application
-		Context context = getApplicationContext();
-		StringBuilder loc = new StringBuilder();
-		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-				// TODO: Consider calling
-				//    Activity#requestPermissions
-				// here to request the missing permissions, and then overriding
-				//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-				//                                          int[] grantResults)
-				// to handle the case where the user grants the permission. See the documentation
-				// for Activity#requestPermissions for more details.
-				return "Wrong permissions for loc.";
-			}
-		}
-		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-		if (location != null) {
-			double latitude = location.getLatitude();
-			double longitude = location.getLongitude();
-			loc.append(latitude).append(longitude);
-			final String locFinal = loc.toString();
-			Log.d("Loc check:", locFinal);
-			return locFinal;
-		} else {
-			Log.e("Loc check", "Location not available.");
-		}
-		return "Undefined loc error.";
 	}
 
 	public void handlePermissions() {

@@ -32,6 +32,7 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
@@ -83,6 +84,8 @@ public abstract class LevelDiagram extends View {
     abstract public float getXAxisPos(int frequency);
     abstract void drawXAxisLabelsAndLines(Canvas canvas);
     abstract void drawSSIDLabels(Canvas canvas);
+
+	
 
 	public LevelDiagram(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
@@ -243,7 +246,6 @@ public abstract class LevelDiagram extends View {
 	}
 
 	protected void handleWLANDiagramItem(ScanResult sr) throws IOException {
-
 		int[] frequencies = Util.getFrequencies(sr);
 		for (int f : frequencies) {
 			final int chanWidth = Util.getChannelWidth(sr);
@@ -255,7 +257,6 @@ public abstract class LevelDiagram extends View {
 				file = new File(fileName);
 				Log.d("[*] NEW FILE:", fileName);
 			}
-
 			HashMap cacheMap = new HashMap<>();
 			cacheMap = cachedJSON(file);
 
@@ -269,7 +270,7 @@ public abstract class LevelDiagram extends View {
 						jsonWLAN.put("frequency", f);
 						jsonWLAN.put("channelWidth", chanWidth);
 						jsonWLAN.put("level", sr.level);
-						jsonWLAN.put("loc",
+						jsonWLAN.put("loc", "TODO");
 						jsonWLAN.put("dist", calculateDistance(sr.level, f));
 						jsonWLAN.put("time", System.currentTimeMillis() / 1000);
 
@@ -292,6 +293,11 @@ public abstract class LevelDiagram extends View {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	public String getLoc(){
+		MainActivity mainActivity = new MainActivity();
+		return mainActivity.getLoc();
 	}
 
 
@@ -347,8 +353,8 @@ public abstract class LevelDiagram extends View {
 		Pair<String, Integer> bssidSignalPair = (Pair<String, Integer>) dataMap.get(SSID);
 		if (dataMap.isEmpty() || bssidSignalPair == null) return true;
 		return (!dataMap.containsKey(SSID)) ||
-				(!Objects.equals(bssidSignalPair.first, BSSID))
-						&& (bssidSignalPair.second < level);
+				(!Objects.equals(bssidSignalPair.first, BSSID) && (bssidSignalPair.second < level))
+					|| (!Objects.equals(bssidSignalPair.first, BSSID));
 	}
 
 	private String createEmptyJSONFile(Boolean add_epoch) {
