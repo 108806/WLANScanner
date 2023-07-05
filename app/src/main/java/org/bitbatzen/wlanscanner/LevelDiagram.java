@@ -279,7 +279,7 @@ public abstract class LevelDiagram extends View {
 					}
 					File outputFile = new File(fileName);
 					try (FileWriter writer = new FileWriter(outputFile, true)) {
-						writer.append(jsonWLAN.toString()).append("\n");
+						writer.append(jsonWLAN.toString()).append(",\n");
 						final String TAG = "JSON file writer";
 						Log.d(TAG, "WLAN data saved to file: " + outputFile.getAbsolutePath());
 					} catch (IOException e) {
@@ -287,6 +287,8 @@ public abstract class LevelDiagram extends View {
 						Log.e(TAG, "Cannot write to JSON.");
 						e.printStackTrace();
 					}
+				}else{
+					Log.d("isBetter:", sr.toString());
 				}
 			} catch (Exception e) {
 				Log.e("WRITER:","ERROR.");
