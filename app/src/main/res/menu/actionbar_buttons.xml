@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item
+		android:id="@+id/actionbutton_toggle_scan"
+		android:icon="@drawable/ic_pause"
+		android:showAsAction="always" />
+
+	<item
+		android:id="@+id/actionbutton_filter"
+		android:icon="@drawable/ic_filter"
+		android:showAsAction="always" />
+
+	<item
+		android:id="@+id/actionbutton_settings"
+		android:icon="@drawable/ic_settings"
+		android:showAsAction="always" />
+
+	<item
+		android:id="@+id/actionbutton_about"
+		android:icon="@drawable/ic_info"
+		android:showAsAction="always" />
+
+</menu>

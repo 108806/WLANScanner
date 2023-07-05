@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/wlanscanner_diagram_bg">
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/spinnerSorting"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/wlanscanner_bg"
+        android:divider="@color/wlanscanner_list_divider"
+        android:dividerHeight="2dp"
+        android:padding="5dp"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:scrollbarSize="2dp"
+        android:scrollbarThumbVertical="@color/wlanscanner_button_bg">
+
+    </ListView>
+
+    <TextView
+        android:id="@+id/tv_last_scan_results"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/wlanscanner_button_bg"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/tv_order_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/spinnerSorting"
+        android:paddingBottom="5dp"
+        android:text="Sort by"
+        android:textColor="@color/wlanscanner_button_bg" />
+
+    <Spinner
+        android:id="@+id/spinnerSorting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/wlanscanner_diagram_lines"
+        android:minHeight="43dp"
+        android:popupBackground="@color/wlanscanner_spinner_popup_bg" />
+
+</RelativeLayout>

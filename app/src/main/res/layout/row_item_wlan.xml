@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingRight="5dp">
+
+    <TextView
+        android:id="@+id/rowItemSSID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/wlanscanner_list_ssid"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/rowItemLastSeen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/rowItemSSID"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/wlanscanner_warning_text"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/rowItemLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/rowItemSSID"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/list_item_level_bg_green"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:textColor="@color/wlanscanner_diagram_bg"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/rowItemChannel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/rowItemFrequencyBand"
+        android:background="@drawable/list_item_highlight_bg"
+        android:paddingLeft="2sp"
+        android:paddingTop="0sp"
+        android:paddingRight="2sp"
+        android:paddingBottom="0sp"
+        android:textColor="@color/wlanscanner_list_item_color1"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/rowItemChannelWidth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/rowItemFrequencyBand"
+        android:textColor="@color/wlanscanner_list_item_color1"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/rowItemFrequencyBand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rowItemCapabilities"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentRight="false"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:paddingLeft="2sp"
+        android:paddingTop="0sp"
+        android:paddingRight="2sp"
+        android:paddingBottom="0sp"
+        android:textColor="@color/wlanscanner_list_item_color1"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/rowItemCapabilities"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rowItemSSID"
+        android:layout_alignParentLeft="true"
+        android:maxLines="1"
+        android:textColor="@color/wlanscanner_list_item_color1"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/rowItemVendor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/rowItemBSSID"
+        android:layout_marginBottom="-2dp"
+        android:textColor="@color/wlanscanner_list_item_color1"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/rowItemBSSID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/rowItemFrequencyBand"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="false"
+        android:textColor="@color/wlanscanner_list_item_color1"
+        android:textSize="14sp" />
+
+</RelativeLayout>
