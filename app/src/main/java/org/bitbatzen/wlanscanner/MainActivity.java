@@ -59,6 +59,7 @@ import org.bitbatzen.wlanscanner.events.EventManager;
 import org.bitbatzen.wlanscanner.events.Events;
 import org.bitbatzen.wlanscanner.events.Events.EventID;
 import org.bitbatzen.wlanscanner.events.IEventListener;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -240,7 +241,7 @@ public class MainActivity extends Activity implements IEventListener {
 			public void onReceive(Context c, Intent intent) {
 				try {
 					onReceivedScanResults();
-				} catch (IOException e) {
+				} catch (IOException | JSONException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -253,6 +254,8 @@ public class MainActivity extends Activity implements IEventListener {
 		try {
 			onReceivedScanResults();
 		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -367,7 +370,7 @@ public class MainActivity extends Activity implements IEventListener {
 		}
 	}
 
-	private void onReceivedScanResults() throws IOException {
+	private void onReceivedScanResults() throws IOException, JSONException {
 		lastScanResultsReceivedTime = System.currentTimeMillis();
 
 		if (!scanEnabled) {
@@ -535,7 +538,7 @@ public class MainActivity extends Activity implements IEventListener {
 		}
 	}
 
-	private void onFilterChanged() throws IOException {
+	private void onFilterChanged() throws IOException, JSONException {
 		ArrayList<ScanResult> mList = new ArrayList<>();
 
 		for (ScanResult sr : scanResultListOrig) {
@@ -635,7 +638,7 @@ public class MainActivity extends Activity implements IEventListener {
 	}
 
 	@Override
-	public void handleEvent(EventID eventID) throws IOException {
+	public void handleEvent(EventID eventID) throws IOException, JSONException {
 		switch (eventID) {
 		case USER_QUIT:
         	setScanEnabled(false);

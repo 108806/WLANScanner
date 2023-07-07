@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import org.bitbatzen.wlanscanner.events.EventManager;
 import org.bitbatzen.wlanscanner.events.Events.EventID;
 import org.bitbatzen.wlanscanner.events.IEventListener;
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -60,6 +61,8 @@ public class FragmentDiagram5GHz
 			levelDiagram.updateDiagram(mainActivity);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
 		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -71,7 +74,7 @@ public class FragmentDiagram5GHz
 	}
 	
 	@Override
-	public void handleEvent(EventID eventID) throws IOException {
+	public void handleEvent(EventID eventID) throws IOException, JSONException {
 		switch (eventID) {
 		case SCAN_RESULT_CHANGED:
 			if (levelDiagram == null) {

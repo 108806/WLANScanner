@@ -25,6 +25,7 @@ import android.net.wifi.ScanResult;
 import android.util.AttributeSet;
 
 import org.bitbatzen.wlanscanner.Util.FrequencyBand;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Map.Entry;
@@ -37,7 +38,7 @@ public class LevelDiagram5GHz extends LevelDiagram {
 	}
 
 	@Override
-    public void updateDiagram(MainActivity mainActivity) throws IOException {
+    public void updateDiagram(MainActivity mainActivity) throws IOException, JSONException {
     	wlans.clear();
     	for (ScanResult sr : mainActivity.getScanResults()) {
     		if (Util.getFrequencyBand(sr) == FrequencyBand.FIVE_GHZ) {

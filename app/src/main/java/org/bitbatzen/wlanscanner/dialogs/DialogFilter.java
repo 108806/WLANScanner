@@ -37,6 +37,7 @@ import org.bitbatzen.wlanscanner.R;
 import org.bitbatzen.wlanscanner.Util;
 import org.bitbatzen.wlanscanner.events.EventManager;
 import org.bitbatzen.wlanscanner.events.Events;
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -164,7 +165,7 @@ public class DialogFilter
 		etFilterInfo = (TextView) findViewById(R.id.tv_dialog_filter_info);
 	}
 
-	public void onClickOk() throws IOException {
+	public void onClickOk() throws IOException, JSONException {
 		SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
 
 		// band filters (2.4 GHz, 5 GHz, 6 GHz)
@@ -268,6 +269,8 @@ public class DialogFilter
 			try {
 				onClickOk();
 			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} catch (JSONException e) {
 				throw new RuntimeException(e);
 			}
 			break;

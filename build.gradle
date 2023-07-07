@@ -5,7 +5,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
     }
 }
 
@@ -15,3 +15,8 @@ allprojects {
         google()
     }
 }
+//apply plugin: 'com.android.application'
+//dependencies {
+//        implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+//    }
+

@@ -19,9 +19,11 @@
 
 package org.bitbatzen.wlanscanner.events;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 
 public interface IEventListener {
 
-	public abstract void handleEvent(Events.EventID eventID) throws IOException;
+	public abstract void handleEvent(Events.EventID eventID) throws IOException, JSONException;
 }

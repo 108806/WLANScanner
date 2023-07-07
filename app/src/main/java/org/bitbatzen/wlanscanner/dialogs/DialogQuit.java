@@ -31,6 +31,7 @@ import android.widget.Button;
 import org.bitbatzen.wlanscanner.R;
 import org.bitbatzen.wlanscanner.events.EventManager;
 import org.bitbatzen.wlanscanner.events.Events.EventID;
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -71,6 +72,8 @@ public class DialogQuit
 			try {
 				EventManager.sharedInstance().sendEvent(EventID.USER_QUIT);
 			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} catch (JSONException e) {
 				throw new RuntimeException(e);
 			}
 			break;

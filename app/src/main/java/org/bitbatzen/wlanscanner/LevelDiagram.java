@@ -38,6 +38,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,9 +47,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -80,7 +83,7 @@ public abstract class LevelDiagram extends View {
 	protected float rowsMarginLeft = 20;
 	protected float rowsMarginRight = 20;
 
-    abstract public void updateDiagram(MainActivity mainActivity) throws IOException;
+    abstract public void updateDiagram(MainActivity mainActivity) throws IOException, JSONException;
     abstract public float getXAxisPos(int frequency);
     abstract void drawXAxisLabelsAndLines(Canvas canvas);
     abstract void drawSSIDLabels(Canvas canvas);
@@ -245,23 +248,64 @@ public abstract class LevelDiagram extends View {
 		return null;
 	}
 
-	protected void handleWLANDiagramItem(ScanResult sr) throws IOException {
+	protected void handleWLANDiagramItem(ScanResult sr) throws IOException, JSONException {
 		int[] frequencies = Util.getFrequencies(sr);
+		final File CWD = Environment.getExternalStorageDirectory();
+
+		HashMap<String, String> uniqueNamesMap = new HashMap<>();
+		String uniquesFileName =  CWD + "/" + "wlan_unique_names" + ".json";
+		File uniquesFile = new File(uniquesFileName);
+		if (!uniquesFile.exists()) {
+			uniquesFileName = createEmptyJSONFile(false);
+			uniquesFile = new File(uniquesFileName);
+			Log.d("[*] NEW FILE:", uniquesFileName);
+		}
+		String jsonContentUniques = new String(Files.readAllBytes(uniquesFile.toPath()));
+		JSONObject jsonObjectUniques;
+		try {
+			jsonObjectUniques = new JSONObject(jsonContentUniques);
+			Iterator<String> keys = jsonObjectUniques.keys();
+			while(keys.hasNext()){
+				String k = keys.next();
+				String v = (String) jsonObjectUniques.get(k);
+				uniqueNamesMap.put(k, v);
+
+			}
+			Log.d("Unique Names:", uniqueNamesMap.toString());
+		}catch (JSONException e) {
+			e.printStackTrace();Log.e("JsonReader:", "Error reading the " + uniquesFileName);
+		}
+
+		HashMap<String, HashMap<String, Object>> dataMap = new HashMap<>();
+		HashMap<String, Object> innerMap = new HashMap<>();
+		String wlanDataFileName =  CWD + "/" + "wlan_data" + ".json";
+		File wlanDataFile = new File(wlanDataFileName);
+		if (!wlanDataFile.exists()) {
+			wlanDataFileName = createEmptyJSONFile(false);
+			wlanDataFile = new File(wlanDataFileName);
+			Log.d("[*] NEW FILE:", wlanDataFileName);
+		}
+		String jsonContentWLAN = new String(Files.readAllBytes(wlanDataFile.toPath()));
+		JSONObject jsonObjectWLAN;
+		try {
+			jsonObjectWLAN = new JSONObject(jsonContentWLAN);
+			Iterator<String> keys = jsonObjectWLAN.keys();
+			while(keys.hasNext()){
+				String k = keys.next();
+				HashMap<String, Object> v = (HashMap<String, Object>) jsonObjectWLAN.get(k);
+				dataMap.put(k, v);
+			}
+			Log.d("Wlan Data :", wlanDataFile.toString());
+		}catch (JSONException e) {
+			e.printStackTrace();Log.e("JsonReader:", "Error reading the" + wlanDataFile);
+		}
+
 		for (int f : frequencies) {
 			final int chanWidth = Util.getChannelWidth(sr);
 			createWLANDiagramItem(sr.SSID, sr.BSSID, f, chanWidth, sr.level);
-			String fileName = Environment.getExternalStorageDirectory() + "/" + "wlan_data" + ".json";
-			File file = new File(fileName);
-			if (!file.exists()) {
-				fileName = createEmptyJSONFile(false);
-				file = new File(fileName);
-				Log.d("[*] NEW FILE:", fileName);
-			}
-			HashMap cacheMap = new HashMap<>();
-			cacheMap = cachedJSON(file);
-
 			try {
-				if (isBetter(cacheMap, sr.SSID, sr.BSSID, sr.level)) {
+				String uniqueName =
+				if (isBetter(dataMap, uniqueName, sr.level)) {
 					// Save the JSON object to a file
 					JSONObject jsonWLAN = new JSONObject();
 					try {
@@ -272,23 +316,24 @@ public abstract class LevelDiagram extends View {
 						jsonWLAN.put("level", sr.level);
 						jsonWLAN.put("loc", "TODO");
 						jsonWLAN.put("dist", calculateDistance(sr.level, f));
+						jsonWLAN.put("sec", sr.capabilities);
 						jsonWLAN.put("time", System.currentTimeMillis() / 1000);
-
+						String unique_name = getUniqueName(sr.SSID, sr.BSSID);
+						innerMap.put("\"" + unique_name + "\"", jsonWLAN);
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-					File outputFile = new File(fileName);
-					try (FileWriter writer = new FileWriter(outputFile, true)) {
-						writer.append(jsonWLAN.toString()).append(",\n");
+					try (FileWriter writer = new FileWriter(wlanDataFile, true)) {
+						writer.append(innerMap.toString()).append(",\n");
 						final String TAG = "JSON file writer";
-						Log.d(TAG, "WLAN data saved to file: " + outputFile.getAbsolutePath());
+						Log.d(TAG, "WLAN data saved to file: " + wlanDataFile.getAbsolutePath());
 					} catch (IOException e) {
 						final String TAG = "JSON file writer";
 						Log.e(TAG, "Cannot write to JSON.");
 						e.printStackTrace();
 					}
 				}else{
-					Log.d("isBetter:", sr.toString());
+					Log.d("isBetter:", "We got better than:" + sr.toString());
 				}
 			} catch (Exception e) {
 				Log.e("WRITER:","ERROR.");
@@ -296,6 +341,24 @@ public abstract class LevelDiagram extends View {
 			}
 		}
 	}
+
+
+	private String getUniqueName(String ssid, String bssid) {
+		return getHex(ssid) + "_" + getHex(bssid);
+	}
+
+	private String getHex(String string){
+		if (string != null && string.isEmpty()) {
+			byte[] byteString = string.getBytes();
+			StringBuilder stringBuilder = new StringBuilder();
+			for (byte b : byteString) {
+				stringBuilder.append(String.format("%02X", b));
+			}
+			return stringBuilder.toString();
+		}
+		return null;
+	}
+
 
 	public String getLoc(){
 		MainActivity mainActivity = new MainActivity();
@@ -320,41 +383,40 @@ public abstract class LevelDiagram extends View {
 			double frequencyInMHz = frequency / 1000.0;
 			distance = distance * (frequencyAdjustment / frequencyInMHz);
 		}
-
-		return distance;
+		return Math.round(distance * 100) / 100.0; // Round to 2 decimal places
 	}
 
-	@TargetApi(Build.VERSION_CODES.ECLAIR)
-	private HashMap<String, Pair<String, Integer>> cachedJSON(File file) throws IOException {
-		HashMap<String, Pair<String, Integer>> dataMap = new HashMap<>();
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				try {
-					JSONObject jsonWLAN = new JSONObject(line);
-					String ssid = jsonWLAN.getString("SSID");
-					String bssid = jsonWLAN.getString("BSSID");
-					int oldLevel = jsonWLAN.getInt("level");
-					Pair<String, Integer> bssidSignalPair = null;
-					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ECLAIR) {
-						bssidSignalPair = new Pair<>(bssid, oldLevel);
-					}
-					dataMap.put(ssid, bssidSignalPair);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return dataMap;
-	}
+//	@TargetApi(Build.VERSION_CODES.ECLAIR)
+//	private HashMap<String, Pair<String, Integer>> cachedJSON(File file) throws IOException {
+//		HashMap<String, Pair<String, Integer>> dataMap = new HashMap<>();
+//
+//		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				try {
+//					JSONObject jsonWLAN = new JSONObject(line);
+//					String ssid = jsonWLAN.getString("SSID");
+//					String bssid = jsonWLAN.getString("BSSID");
+//					int oldLevel = jsonWLAN.getInt("level");
+//					Pair<String, Integer> bssidSignalPair = null;
+//					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ECLAIR) {
+//						bssidSignalPair = new Pair<>(bssid, oldLevel);
+//					}
+//					dataMap.put(ssid, bssidSignalPair);
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		return dataMap;
+//	}
 
 
 	@TargetApi(Build.VERSION_CODES.ECLAIR)
 	private boolean isBetter(HashMap dataMap, String SSID, String BSSID, int level) throws IOException {
 		Pair<String, Integer> bssidSignalPair = (Pair<String, Integer>) dataMap.get(SSID);
-		if (dataMap.isEmpty() || bssidSignalPair == null) return true;
-		return (!dataMap.containsKey(SSID)) ||
+		if (innerMap.isEmpty() || bssidSignalPair == null) return true;
+		return (!innerMap.containsKey(SSID)) ||
 				(!Objects.equals(bssidSignalPair.first, BSSID) && (bssidSignalPair.second < level))
 					|| (!Objects.equals(bssidSignalPair.first, BSSID));
 	}

@@ -19,6 +19,8 @@
 
 package org.bitbatzen.wlanscanner.events;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +58,7 @@ public class EventManager {
 		}
 	}
 	
-	public void sendEvent(Events.EventID eventID) throws IOException {
+	public void sendEvent(Events.EventID eventID) throws IOException, JSONException {
 		for (Map.Entry<Events.EventID, ArrayList<IEventListener>> entry : eventListeners.entrySet()) {
 		    if (entry.getKey() ==  eventID) {
 		    	ArrayList<IEventListener> listenerList = entry.getValue();
